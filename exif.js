@@ -385,6 +385,10 @@
             }
         }
 
+        if (!img) {
+          return;
+        }
+
         if (img.src) {
             if (/^data\:/i.test(img.src)) { // Data URI
                 var arrayBuffer = base64ToArrayBuffer(img.src);

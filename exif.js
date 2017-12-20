@@ -20,6 +20,11 @@
     }
 
     var ExifTags = EXIF.Tags = {
+        // lens data
+        0xA432 : "LensSpecification",       // 4 rational values giving focal and aperture ranges
+        0xA433 : "LensMake",
+        0xA434 : "LensModel",
+        0xA435 : "LensSerialNumber",
 
         // version tags
         0x9000 : "ExifVersion",             // EXIF version
@@ -336,7 +341,7 @@
     }
 
     function imageHasData(img) {
-        return !!(img.exifdata);
+        return !!img && !!img.exifdata && !!img.xmpdata;
     }
 
 
@@ -373,7 +378,7 @@
             img.iptcdata = iptcdata || {};
             if (EXIF.isXmpEnabled) {
                var xmpdata= findXMPinJPEG(binFile);
-               img.xmpdata = xmpdata || {};               
+               img.xmpdata = xmpdata || {};
             }
             if (callback) {
                 callback.call(img);
@@ -738,7 +743,7 @@
 
     function getStringFromDB(buffer, start, length) {
         var outstr = "";
-        for (n = start; n < start+length; n++) {
+        for (var n = start; n < start+length; n++) {
             outstr += String.fromCharCode(buffer.getUint8(n));
         }
         return outstr;
@@ -892,7 +897,7 @@
 
     function xml2json(xml) {
         var json = {};
-      
+
         if (xml.nodeType == 1) { // element node
           if (xml.attributes.length > 0) {
             json['@attributes'] = {};
@@ -904,7 +909,7 @@
         } else if (xml.nodeType == 3) { // text node
           return xml.nodeValue;
         }
-      
+
         // deal with children
         if (xml.hasChildNodes()) {
           for(var i = 0; i < xml.childNodes.length; i++) {
@@ -922,7 +927,7 @@
             }
           }
         }
-        
+
         return json;
     }
 
@@ -993,7 +998,7 @@
         if (!imageHasData(img)) return;
         return img.exifdata[tag];
     }
-    
+
     EXIF.getIptcTag = function(img, tag) {
         if (!imageHasData(img)) return;
         return img.iptcdata[tag];
@@ -1011,7 +1016,7 @@
         }
         return tags;
     }
-    
+
     EXIF.getAllIptcTags = function(img) {
         if (!imageHasData(img)) return {};
         var a,
@@ -1056,4 +1061,3 @@
         });
     }
 }.call(this));
-
